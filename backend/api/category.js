@@ -22,17 +22,17 @@ module.exports = app => {
             app.db('categories')
                 .insert(category)
                 .then(_ => res.status(204).send())
-                .catch(err => res.status(500).send(msg))
+                .catch(err => res.status(500).send(err))
         }
     }
 
     const remove = async (req, res) => {
         try {
-            existeOuErro(req.params.id, 'Código da categoria não informado.')
+            existeOuErro(req.params.id, "Código da categoria não informado.")
 
             const subcategory = await app.db('categories')
                 .where({ parentId: req.params.id }) //"req.params.id" esse eu quero excluir. Então vejo se alguma subcategoria tem o mesmo id
-            naoExisteOuErro(subcategory, 'Categoria possui subcategorias.') 
+            naoExisteOuErro(subcategory, "Categoria possui subcategorias.") 
             
             const articles = await app.db('articles')
                 .where({ categoryId: req.params.id })
@@ -40,7 +40,7 @@ module.exports = app => {
 
             const rowsDeleted = await app.db('categories') // resultado que retorna a partir da exclusao
                 .where({ id: req.params.id }).del()
-            existeOuErro(rowsDeleted, 'Categoria não foi encontrada.')
+            existeOuErro(rowsDeleted, "Categoria não foi encontrada.")
 
             res.status(204).send()
         } catch(msg) {
@@ -89,5 +89,22 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
-    return { save, remove, get, getById }
+    //transformar um array em uma arvore
+    const toTree = (categories, tree) => { //PraArvore, vai receber uma árvore e um array de categorias
+        if(!tree) tree = categories.filter(c => !c.parentId)  //se nao tiver setado vai pegar todas as categorias que nao tem o parentId setado 
+        tree = tree.map(parentNode => {
+            const isChild = node => node.parentId == parentNode.id
+            parentNode.chindren = toTree(categories, categories.filter(isChild))
+            return parentNode
+        })
+        return tree
+    }
+
+    const getTree = (req, res) => {
+        app.db('categories')
+            .then(categories => res.json(toTree(categories)))
+            .catch(err => res.status(500).send(err))
+    }
+
+    return { save, remove, get, getById, getTree }
 }
