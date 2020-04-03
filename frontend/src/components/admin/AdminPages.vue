@@ -22,7 +22,7 @@
 <script>
 import PageTitle from '../template/PageTitle'
 import ArticleAdmin from './ArticleAdmin'
-import CategoryAdmin from './CategoriaAdmin'
+import CategoryAdmin from './CategoryAdmin'
 import UserAdmin from './UserAdmin'
 
 export default {
