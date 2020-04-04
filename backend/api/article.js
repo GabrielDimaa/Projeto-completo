@@ -82,7 +82,7 @@ module.exports = app => {
         app.db({a: 'articles', u: 'users'})
             .select('a.id', 'a.name', 'a.description', 'a.imageUrl', { author: 'u.name' })
             .limit(limit).offset(page * limit - limit)
-            .whereRaw('?? = ??', ['u.id', 'a.user.id']) //igualar as duas tabelas
+            .whereRaw('?? = ??', ['u.id', 'a.userId']) //igualar as duas tabelas
             .whereIn('categoryId', ids)
             .orderBy('a.id', 'desc')
             .then(articles => res.json(articles))

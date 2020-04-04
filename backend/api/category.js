@@ -99,7 +99,7 @@ module.exports = app => {
         if(!tree) tree = categories.filter(c => !c.parentId)  //se nao tiver setado vai pegar todas as categorias que nao tem o parentId setado 
         tree = tree.map(parentNode => {
             const isChild = node => node.parentId == parentNode.id
-            parentNode.chindren = toTree(categories, categories.filter(isChild))
+            parentNode.children = toTree(categories, categories.filter(isChild))
             return parentNode
         })
         return tree
